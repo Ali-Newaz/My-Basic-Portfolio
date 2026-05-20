@@ -1,340 +1,896 @@
-'use client';
+"use client";
 
-import { useLayoutEffect, useRef, useEffect, useState } from 'react';
-import Image from 'next/image';
-import { ArrowUpRight, FileText, Mail, Shield, Wrench, GraduationCap, Compass, Laptop, Layout } from 'lucide-react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import {
+  ArrowDownToLine,
+  ArrowUpRight,
+  BadgeCheck,
+  BookOpen,
+  BriefcaseBusiness,
+  Mail,
+  MapPin,
+  Sparkles,
+  University
+} from "lucide-react";
+import Lenis from "lenis";
+import Image from "next/image";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 
-export default function Home() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const scrollBufferRef = useRef<HTMLDivElement>(null);
-  const [isMounted, setIsMounted] = useState(false);
-  
-  // Section Tracking Targets
-  const aboutRef = useRef<HTMLDivElement>(null);
-  const projectsRef = useRef<HTMLDivElement>(null);
-  const projectsTrackRef = useRef<HTMLDivElement>(null);
-  const contactRef = useRef<HTMLDivElement>(null);
+const heroWords = ["ALI", "NEWAZ"];
 
-  useEffect(() => {
-    setIsMounted(true);
+const blobPaths = {
+  hero:
+    "M 468 73 C 548 114 601 193 589 280 C 576 373 501 442 396 462 C 288 482 175 437 109 355 C 43 273 46 166 114 96 C 181 27 363 21 468 73 Z",
+  about:
+    "M 443 47 C 559 62 620 169 600 277 C 580 386 506 456 381 477 C 258 497 133 444 83 345 C 33 247 84 129 170 75 C 257 20 326 31 443 47 Z",
+  projects:
+    "M 512 92 C 590 151 625 236 577 329 C 529 423 401 474 281 452 C 160 430 80 344 89 238 C 97 133 184 55 296 45 C 408 35 434 33 512 92 Z",
+  contact:
+    "M 498 35 C 607 89 639 229 579 336 C 519 444 370 499 239 456 C 108 413 51 292 91 178 C 132 65 265 20 365 38 C 466 55 389 -19 498 35 Z"
+};
+
+const credentials = [
+  {
+    icon: <BriefcaseBusiness className="h-4 w-4" />,
+    label: "Professional Branding",
+    value: "Property Preservation Specialist & CSE Student"
+  },
+  {
+    icon: <University className="h-4 w-4" />,
+    label: "Institution",
+    value: "World University of Bangladesh (WUB)"
+  },
+  {
+    icon: <MapPin className="h-4 w-4" />,
+    label: "Operating Mode",
+    value: "Field precision, digital systems, client-ready delivery"
+  }
+];
+
+const projects = [
+  {
+    eyebrow: "Preservation",
+    title: "Field Readiness Suite",
+    summary:
+      "A glass-panel operations concept for inspection queues, scope notes, dispatch status, and quality control across preservation workflows.",
+    stats: ["QC Matrix", "Vendor Notes", "Asset Logs"]
+  },
+  {
+    eyebrow: "Academic Systems",
+    title: "CSE Learning Atlas",
+    summary:
+      "A disciplined study environment connecting lab references, project checkpoints, algorithm notes, and WUB coursework rhythm.",
+    stats: ["Course Map", "Lab Timeline", "Review Deck"]
+  },
+  {
+    eyebrow: "Client Experience",
+    title: "Claim Evidence Portal",
+    summary:
+      "A polished intake and presentation layer for before-after evidence, annotated media, and progress summaries.",
+    stats: ["Media Grid", "Status Logic", "PDF Export"]
+  },
+  {
+    eyebrow: "Personal Brand",
+    title: "Ali Newaz Identity OS",
+    summary:
+      "A premium portfolio system balancing professional preservation credibility with a rigorous computer science trajectory.",
+    stats: ["Motion UI", "Resume Path", "Luxury Web"]
+  }
+];
+
+const notNull = <T,>(value: T | null): value is T => value !== null;
+
+type MagneticButtonProps = {
+  href: string;
+  children: ReactNode;
+  icon?: ReactNode;
+  download?: boolean;
+  target?: "_self" | "_blank";
+  ariaLabel?: string;
+  onClick?: (event: ReactMouseEvent<HTMLAnchorElement>) => void;
+};
+
+function MagneticButton({
+  href,
+  children,
+  icon,
+  download,
+  target = "_self",
+  ariaLabel,
+  onClick
+}: MagneticButtonProps) {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 180, damping: 16, mass: 0.42 });
+  const springY = useSpring(y, { stiffness: 180, damping: 16, mass: 0.42 });
+  const rotateX = useTransform(springY, [-24, 24], [8, -8]);
+  const rotateY = useTransform(springX, [-24, 24], [-8, 8]);
+
+  const handleMouseMove = (event: ReactMouseEvent<HTMLAnchorElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    x.set((event.clientX - centerX) * 0.28);
+    y.set((event.clientY - centerY) * 0.28);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.a
+      aria-label={ariaLabel}
+      className="gpu-layer group inline-flex min-h-12 items-center justify-center gap-3 rounded-[8px] border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium uppercase tracking-normal text-ink shadow-button backdrop-blur-3xl outline-none transition-colors duration-300 ease-luxury hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-ink/40"
+      download={download}
+      href={href}
+      onClick={onClick}
+      onMouseLeave={handleMouseLeave}
+      onMouseMove={handleMouseMove}
+      rel={target === "_blank" ? "noreferrer" : undefined}
+      style={{ x: springX, y: springY, rotateX, rotateY }}
+      target={target}
+      whileTap={{ scale: 0.97 }}
+    >
+      <span className="flex h-7 w-7 items-center justify-center rounded-[8px] border border-ink/10 bg-ink text-canvas transition-transform duration-300 ease-luxury group-hover:rotate-6">
+        {icon}
+      </span>
+      <span>{children}</span>
+    </motion.a>
+  );
+}
+
+export default function Page() {
+  const sceneRef = useRef<HTMLDivElement | null>(null);
+  const scrollBufferRef = useRef<HTMLDivElement | null>(null);
+  const blobShellRef = useRef<HTMLDivElement | null>(null);
+  const blobPathRef = useRef<SVGPathElement | null>(null);
+  const heroRef = useRef<HTMLElement | null>(null);
+  const heroMetaRef = useRef<HTMLDivElement | null>(null);
+  const heroActionsRef = useRef<HTMLDivElement | null>(null);
+  const profileCardRef = useRef<HTMLDivElement | null>(null);
+  const aboutRef = useRef<HTMLElement | null>(null);
+  const projectsRef = useRef<HTMLElement | null>(null);
+  const projectTrackRef = useRef<HTMLDivElement | null>(null);
+  const contactRef = useRef<HTMLElement | null>(null);
+  const progressFillRef = useRef<HTMLDivElement | null>(null);
+  const heroCharsRef = useRef<HTMLSpanElement[]>([]);
+  const lenisRef = useRef<Lenis | null>(null);
+
+  heroCharsRef.current = [];
+
+  const registerHeroChar = useCallback((node: HTMLSpanElement | null) => {
+    if (node && !heroCharsRef.current.includes(node)) {
+      heroCharsRef.current.push(node);
+    }
+  }, []);
+
+  const scrollToProgress = useCallback((progress: number) => {
+    return (event: ReactMouseEvent<HTMLAnchorElement>) => {
+      event.preventDefault();
+      const maxScroll = Math.max(
+        document.documentElement.scrollHeight - window.innerHeight,
+        0
+      );
+      const target = maxScroll * progress;
+
+      if (lenisRef.current) {
+        lenisRef.current.scrollTo(target, {
+          duration: 1.08,
+          easing: (t: number) => 1 - Math.pow(1 - t, 4)
+        });
+        return;
+      }
+
+      window.scrollTo({ top: target, behavior: "smooth" });
+    };
   }, []);
 
   useLayoutEffect(() => {
-    if (!isMounted) return;
-    
     gsap.registerPlugin(ScrollTrigger);
 
-    // 1. Idle Floating Core Fluid Animations (Wondermakers Floating Feel)
-    gsap.to('.float-card', {
-      y: '+=15',
-      rotation: '+=1',
-      duration: 4,
-      repeat: -1,
-      yoyo: true,
-      ease: 'power1.inOut'
-    });
+    let lenis: Lenis | null = null;
+    let updateLenis: ((time: number) => void) | null = null;
 
-    gsap.to('.float-img', {
-      y: '-=12',
-      rotation: '-=1',
-      duration: 4.5,
-      repeat: -1,
-      yoyo: true,
-      ease: 'power1.inOut',
-      delay: 0.3
-    });
-
-    // 2. Master Multidirectional Scroll-Assembly Timeline
     const ctx = gsap.context(() => {
-      
-      // Page Fade-in Entrance
-      gsap.fromTo('.hero-assemble', 
-        { scale: 0.9, opacity: 0, y: 40 }, 
-        { scale: 1, opacity: 1, duration: 1.2, ease: 'power4.out', stagger: 0.1 }
-      );
+      const heroCharacters = heroCharsRef.current;
+      const principalLayers = [
+        sceneRef.current,
+        blobShellRef.current,
+        blobPathRef.current,
+        heroRef.current,
+        heroMetaRef.current,
+        heroActionsRef.current,
+        profileCardRef.current,
+        aboutRef.current,
+        projectsRef.current,
+        projectTrackRef.current,
+        contactRef.current
+      ].filter(notNull);
 
-      const masterTl = gsap.timeline({
+      lenis = new Lenis({
+        lerp: 0.1,
+        smoothWheel: true,
+        syncTouch: true,
+        wheelMultiplier: 1,
+        touchMultiplier: 1.08
+      });
+      lenisRef.current = lenis;
+      lenis.on("scroll", ScrollTrigger.update);
+
+      updateLenis = (time: number) => {
+        lenis?.raf(time * 1000);
+      };
+
+      gsap.ticker.add(updateLenis);
+      gsap.ticker.lagSmoothing(0);
+
+      gsap.set(principalLayers, {
+        force3D: true,
+        transformStyle: "preserve-3d",
+        backfaceVisibility: "hidden",
+        willChange: "transform, opacity, filter"
+      });
+
+      gsap.set(heroCharacters, {
+        force3D: true,
+        transformOrigin: "50% 50% -120px",
+        transformStyle: "preserve-3d",
+        backfaceVisibility: "hidden",
+        willChange: "transform, opacity, filter"
+      });
+
+      gsap.set([aboutRef.current, projectsRef.current, contactRef.current], {
+        autoAlpha: 0,
+        pointerEvents: "none"
+      });
+
+      gsap.set(blobShellRef.current, {
+        scale: 1,
+        rotate: 0,
+        transformOrigin: "50% 50%"
+      });
+
+      gsap.set(progressFillRef.current, {
+        scaleX: 0,
+        transformOrigin: "0% 50%"
+      });
+
+      const projectStart = () => window.innerWidth * 0.3;
+      const projectTravel = () => {
+        const track = projectTrackRef.current;
+        if (!track) {
+          return 0;
+        }
+        const viewport = window.innerWidth;
+        const endingInset = viewport > 1024 ? viewport * 0.16 : viewport * 0.08;
+        return Math.min(0, viewport - track.scrollWidth - endingInset);
+      };
+
+      const master = gsap.timeline({
+        defaults: { ease: "none" },
         scrollTrigger: {
           trigger: scrollBufferRef.current,
-          start: 'top top',
-          end: 'bottom bottom',
+          start: "top top",
+          end: "bottom bottom",
           scrub: 0.5,
+          invalidateOnRefresh: true
         }
       });
 
-      // SCENE 1: Hero Explosive Break apart
-      masterTl.to('.hero-title-left', { x: '-50vw', opacity: 0, ease: 'none' }, 0)
-              .to('.hero-title-right', { x: '50vw', opacity: 0, ease: 'none' }, 0)
-              .to('.hero-profile-box', { y: '-100vh', scale: 0.8, opacity: 0, ease: 'none' }, 0)
-              .to('.hero-tag-badge', { y: 60, opacity: 0, ease: 'none' }, 0);
+      master
+        .to(
+          progressFillRef.current,
+          {
+            scaleX: 1,
+            duration: 3.6
+          },
+          0
+        )
+        .to(
+          blobPathRef.current,
+          {
+            attr: { d: blobPaths.about },
+            duration: 0.82,
+            ease: "sine.inOut"
+          },
+          0
+        )
+        .to(
+          blobShellRef.current,
+          {
+            scale: 2.2,
+            rotate: 12,
+            duration: 0.82,
+            ease: "power3.inOut"
+          },
+          0
+        )
+        .to(
+          heroCharacters,
+          {
+            x: (index: number) => {
+              const direction = index % 2 === 0 ? -1 : 1;
+              return direction * (110 + index * 9);
+            },
+            y: (index: number) => (index % 3 - 1) * 86,
+            z: (index: number) => 220 + index * 16,
+            rotateX: (index: number) => (index % 2 === 0 ? 48 : -44),
+            rotateY: (index: number) => (index % 2 === 0 ? -28 : 34),
+            opacity: 0,
+            filter: "blur(22px)",
+            duration: 0.62,
+            ease: "power3.in",
+            stagger: {
+              amount: 0.16,
+              from: "center"
+            }
+          },
+          0.08
+        )
+        .to(
+          [heroMetaRef.current, heroActionsRef.current, profileCardRef.current],
+          {
+            y: -34,
+            autoAlpha: 0,
+            pointerEvents: "none",
+            filter: "blur(18px)",
+            duration: 0.48,
+            ease: "power2.in"
+          },
+          0.12
+        )
+        .set(aboutRef.current, { pointerEvents: "auto" }, 0.38)
+        .fromTo(
+          aboutRef.current,
+          {
+            autoAlpha: 0,
+            scale: 0.74,
+            y: 80,
+            filter: "blur(28px)",
+            clipPath: "circle(0% at 50% 50%)"
+          },
+          {
+            autoAlpha: 1,
+            scale: 1,
+            y: 0,
+            filter: "blur(0px)",
+            clipPath: "circle(130% at 50% 50%)",
+            duration: 0.78,
+            ease: "power4.out"
+          },
+          0.42
+        )
+        .to(
+          blobPathRef.current,
+          {
+            attr: { d: blobPaths.projects },
+            duration: 0.96,
+            ease: "sine.inOut"
+          },
+          1.04
+        )
+        .to(
+          blobShellRef.current,
+          {
+            scale: 4.7,
+            rotate: -18,
+            duration: 0.96,
+            ease: "power3.inOut"
+          },
+          1.04
+        )
+        .to(
+          aboutRef.current,
+          {
+            autoAlpha: 0,
+            y: -72,
+            scale: 0.92,
+            filter: "blur(22px)",
+            clipPath: "circle(34% at 50% 42%)",
+            duration: 0.52,
+            ease: "power2.in"
+          },
+          1.16
+        )
+        .set(aboutRef.current, { pointerEvents: "none" }, 1.52)
+        .set(projectsRef.current, { pointerEvents: "auto" }, 1.36)
+        .fromTo(
+          projectsRef.current,
+          {
+            autoAlpha: 0,
+            y: 70,
+            scale: 0.9,
+            filter: "blur(24px)"
+          },
+          {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            filter: "blur(0px)",
+            duration: 0.5,
+            ease: "power3.out"
+          },
+          1.34
+        )
+        .fromTo(
+          projectTrackRef.current,
+          {
+            x: projectStart
+          },
+          {
+            x: projectTravel,
+            duration: 1.22,
+            ease: "none"
+          },
+          1.5
+        )
+        .to(
+          blobPathRef.current,
+          {
+            attr: { d: blobPaths.contact },
+            duration: 0.88,
+            ease: "sine.inOut"
+          },
+          2.42
+        )
+        .to(
+          blobShellRef.current,
+          {
+            scale: 8,
+            rotate: 28,
+            duration: 0.92,
+            ease: "expo.inOut"
+          },
+          2.42
+        )
+        .to(
+          projectsRef.current,
+          {
+            autoAlpha: 0,
+            y: -54,
+            scale: 0.96,
+            filter: "blur(20px)",
+            duration: 0.46,
+            ease: "power2.in"
+          },
+          2.62
+        )
+        .set(projectsRef.current, { pointerEvents: "none" }, 2.96)
+        .set(contactRef.current, { pointerEvents: "auto" }, 2.94)
+        .fromTo(
+          contactRef.current,
+          {
+            autoAlpha: 0,
+            y: 90,
+            scale: 0.82,
+            filter: "blur(28px)",
+            clipPath: "circle(0% at 50% 54%)"
+          },
+          {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            filter: "blur(0px)",
+            clipPath: "circle(140% at 50% 50%)",
+            duration: 0.66,
+            ease: "power4.out"
+          },
+          2.96
+        );
 
-      // SCENE 2: About Panel Assembly From Left & Right Directions
-      masterTl.fromTo('#section-about', { opacity: 0 }, { opacity: 1, ease: 'none' }, 0.1)
-              .fromTo('.about-panel-left', { x: '-100vw', opacity: 0 }, { x: '0vw', opacity: 1, ease: 'power2.out' }, 0.15)
-              .fromTo('.about-panel-right', { x: '100vw', scale: 0.9, opacity: 0 }, { x: '0vw', scale: 1, opacity: 1, ease: 'power2.out' }, 0.15);
+      ScrollTrigger.refresh();
+    }, sceneRef);
 
-      // SCENE 3: About Shifts Out, Horizontal Projects Slides In
-      masterTl.to('#section-about', { y: '-100vh', opacity: 0, ease: 'none' }, 0.4)
-              .fromTo('#section-projects', { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, ease: 'none' }, 0.4);
+    const handleResize = () => ScrollTrigger.refresh();
+    window.addEventListener("resize", handleResize);
 
-      // Mechanical Project Track Slide (Calculating track length dynamically)
-      const totalShift = projectsTrackRef.current ? projectsTrackRef.current.scrollWidth - window.innerWidth : 0;
-      masterTl.to(projectsTrackRef.current, {
-        x: -totalShift - 150,
-        ease: 'none'
-      }, 0.45);
-
-      // SCENE 4: Projects Fly Away, Contact Rises from Background Depth
-      masterTl.to('#section-projects', { scale: 1.05, opacity: 0, ease: 'none' }, 0.8)
-              .fromTo('#section-contact', 
-                { opacity: 0, scale: 0.85, y: 100 }, 
-                { opacity: 1, scale: 1, y: 0, ease: 'power4.out' }, 0.85
-              );
-
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, [isMounted]);
-
-  // Operational Menu Anchor Map System
-  const scrollToView = (targetPercentage: number) => {
-    const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-    window.scrollTo({
-      top: totalHeight * targetPercentage,
-      behavior: 'smooth'
-    });
-  };
-
-  if (!isMounted) return <div className="bg-[#f3eee7] min-h-screen" />;
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (updateLenis) {
+        gsap.ticker.remove(updateLenis);
+      }
+      lenis?.destroy();
+      lenisRef.current = null;
+      ctx.revert();
+    };
+  }, []);
 
   return (
-    <div ref={containerRef} className="bg-[#f3eee7] text-[#1a1a15] min-h-screen font-sans overflow-x-hidden selection:bg-[#cc5a37] selection:text-white antialiased">
-      
-      {/* GLOBAL UI BOUNDS */}
-      <div className="fixed inset-0 h-screen w-screen overflow-hidden z-10 p-6 md:p-12 flex flex-col justify-between pointer-events-none">
-        
-        {/* POLISHED NAVIGATION BAR */}
-        <header className="w-full flex justify-between items-center z-50 pointer-events-auto">
-          <div onClick={() => scrollToView(0)} className="flex items-center gap-4 cursor-pointer group">
-            <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-[#1a1a15]/20 flex items-center justify-center bg-white/40 backdrop-blur-md group-hover:scale-105 transition-transform">
-              <Image src="/assets/logo.png" alt="Ali Newaz Logo" width={38} height={38} className="object-contain" priority />
-            </div>
-            <div className="flex flex-col text-left">
-              <span className="font-black uppercase tracking-wider text-sm leading-none">Ali Newaz</span>
-              <span className="text-[10px] font-mono tracking-widest opacity-60 mt-0.5">CSE // SPECIALIST</span>
+    <main className="relative min-h-[400vh] bg-canvas text-ink">
+      <div
+        ref={sceneRef}
+        className="fixed-cinematic-viewport isolate bg-canvas"
+      >
+        <div className="pointer-events-none absolute inset-0 opacity-[0.45] [background-image:linear-gradient(90deg,rgba(26,26,21,0.055)_1px,transparent_1px),linear-gradient(180deg,rgba(26,26,21,0.055)_1px,transparent_1px)] [background-size:72px_72px]" />
+        <div className="pointer-events-none absolute inset-x-6 top-6 z-40 flex items-center justify-between md:inset-x-10">
+          <div className="glass-panel gpu-layer pointer-events-auto flex h-12 items-center gap-3 rounded-[8px] px-3">
+            <Image
+              alt="Ali Newaz logo"
+              className="h-8 w-8 object-contain"
+              height={32}
+              priority
+              src="/assets/logo.png"
+              width={32}
+              onError={(event) => {
+                event.currentTarget.style.display = "none";
+              }}
+            />
+            <div className="leading-none">
+              <p className="font-display text-base uppercase tracking-normal">
+                Ali Newaz
+              </p>
+              <p className="mt-1 text-[10px] uppercase tracking-normal text-ink/55">
+                Portfolio System
+              </p>
             </div>
           </div>
-          
-          {/* OPERATIONAL NAVIGATION ACTIONS */}
-          <nav className="hidden md:flex items-center gap-8 bg-white/50 backdrop-blur-md border border-[#1a1a15]/10 px-8 py-3 rounded-full shadow-sm">
-            <button onClick={() => scrollToView(0.25)} className="text-xs uppercase tracking-widest font-bold hover:text-[#cc5a37] transition-colors">About</button>
-            <button onClick={() => scrollToView(0.55)} className="text-xs uppercase tracking-widest font-bold hover:text-[#cc5a37] transition-colors">Projects</button>
-            <button onClick={() => scrollToView(0.95)} className="text-xs uppercase tracking-widest font-bold hover:text-[#cc5a37] transition-colors">Contact</button>
-          </nav>
+          <div className="glass-panel gpu-layer hidden h-12 items-center gap-5 rounded-[8px] px-4 text-xs uppercase tracking-normal text-ink/70 md:flex">
+            <a
+              className="transition-colors duration-300 hover:text-ink"
+              href="#about"
+              onClick={scrollToProgress(0.28)}
+            >
+              About
+            </a>
+            <a
+              className="transition-colors duration-300 hover:text-ink"
+              href="#projects"
+              onClick={scrollToProgress(0.58)}
+            >
+              Projects
+            </a>
+            <a
+              className="transition-colors duration-300 hover:text-ink"
+              href="#contact"
+              onClick={scrollToProgress(0.92)}
+            >
+              Contact
+            </a>
+          </div>
+        </div>
 
-          {/* FIX: TAB OVERRIDE ONLINE CV VIEWING */}
-          <a 
-            href="/assets/Ali_Newaz_CV.pdf" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-xs uppercase tracking-widest font-bold bg-[#1a1a15] text-[#f3eee7] px-6 py-3 rounded-xl hover:bg-[#cc5a37] transition-all"
+        <div
+          ref={blobShellRef}
+          className="gpu-layer pointer-events-none absolute left-1/2 top-1/2 z-0 h-[58vmin] w-[58vmin] -translate-x-1/2 -translate-y-1/2 animate-breathe opacity-90 mix-blend-multiply"
+        >
+          <svg
+            aria-hidden="true"
+            className="h-full w-full overflow-visible"
+            viewBox="0 0 680 520"
           >
-            <FileText size={14} /> View CV <ArrowUpRight size={14} />
-          </a>
-        </header>
+            <defs>
+              <filter id="liquid-goo">
+                <feGaussianBlur
+                  in="SourceGraphic"
+                  result="blur"
+                  stdDeviation="10"
+                />
+                <feColorMatrix
+                  in="blur"
+                  mode="matrix"
+                  result="goo"
+                  values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8"
+                />
+                <feBlend in="SourceGraphic" in2="goo" />
+              </filter>
+              <linearGradient id="blob-finish" x1="8%" x2="94%" y1="4%" y2="92%">
+                <stop offset="0%" stopColor="#fff9f0" stopOpacity="0.98" />
+                <stop offset="48%" stopColor="#d8c3ad" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#5b4638" stopOpacity="0.46" />
+              </linearGradient>
+            </defs>
+            <g filter="url(#liquid-goo)">
+              <path
+                ref={blobPathRef}
+                d={blobPaths.hero}
+                fill="url(#blob-finish)"
+                stroke="rgba(26,26,21,0.18)"
+                strokeWidth="1"
+              />
+            </g>
+          </svg>
+        </div>
 
-        {/* COMPONENT SCENE 1: HERO ASSEMBLY */}
-        <section className="absolute inset-0 flex flex-col items-center justify-center p-4 z-20 pointer-events-auto">
-          <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center px-4">
-            <div className="lg:col-span-7 space-y-4 text-left">
-              <div className="hero-tag-badge hero-assemble flex items-center gap-2 bg-white/60 backdrop-blur-md border border-[#1a1a15]/10 w-max px-4 py-1.5 rounded-full text-xs font-mono font-bold text-[#cc5a37]">
-                <GraduationCap size={14} /> CSE STUDENT & PROPERTY PRESERVATION
+        <section
+          ref={heroRef}
+          className="gpu-layer absolute inset-0 z-10 flex items-center px-6 pb-10 pt-24 md:px-10"
+        >
+          <div className="grid w-full grid-cols-1 items-end gap-8 lg:grid-cols-[1fr_360px]">
+            <div className="min-w-0">
+              <div
+                ref={heroMetaRef}
+                className="gpu-layer mb-7 flex max-w-2xl flex-wrap items-center gap-3"
+              >
+                <span className="glass-panel rounded-[8px] px-3 py-2 text-xs uppercase tracking-normal text-ink/70">
+                  Property Preservation Specialist
+                </span>
+                <span className="glass-panel rounded-[8px] px-3 py-2 text-xs uppercase tracking-normal text-ink/70">
+                  CSE Student at WUB
+                </span>
               </div>
-              <h1 className="text-6xl md:text-[95px] font-black tracking-tighter uppercase leading-[0.85] flex flex-col select-none">
-                <span className="hero-title-left block will-change-transform">ALI</span>
-                <span className="hero-title-right block text-[#cc5a37] will-change-transform">NEWAZ</span>
+              <h1 className="font-display text-7xl uppercase leading-none tracking-normal text-ink sm:text-8xl md:text-9xl lg:text-[9rem] xl:text-[11rem] 2xl:text-[12rem]">
+                {heroWords.map((word) => (
+                  <span className="block" key={word}>
+                    {Array.from(word).map((letter, index) => (
+                      <span
+                        className="gpu-layer inline-block"
+                        key={`${word}-${letter}-${index}`}
+                        ref={registerHeroChar}
+                      >
+                        {letter}
+                      </span>
+                    ))}
+                  </span>
+                ))}
               </h1>
+              <div ref={heroActionsRef} className="gpu-layer mt-8 flex flex-wrap gap-3">
+                <MagneticButton
+                  href="#projects"
+                  icon={<Sparkles className="h-4 w-4" />}
+                  onClick={scrollToProgress(0.58)}
+                >
+                  View Projects
+                </MagneticButton>
+                <MagneticButton
+                  download
+                  href="/assets/cv.png"
+                  icon={<ArrowDownToLine className="h-4 w-4" />}
+                >
+                  Download CV
+                </MagneticButton>
+              </div>
             </div>
 
-            <div className="lg:col-span-5 flex justify-center lg:justify-end hero-profile-box will-change-transform hero-assemble">
-              <div className="float-card w-full max-w-[340px] bg-white/60 backdrop-blur-xl border border-[#1a1a15]/10 p-4 rounded-2xl shadow-sm">
-                <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden border border-[#1a1a15]/10 mb-4 bg-black/5">
-                  <Image src="/assets/headshot.jpg" alt="Ali Newaz Professional Headshot" fill className="object-cover" priority sizes="340px" />
+            <div
+              ref={profileCardRef}
+              className="glass-panel gpu-layer hidden rounded-[8px] p-3 lg:block"
+            >
+              <div className="relative aspect-[4/5] overflow-hidden rounded-[8px] border border-white/10 bg-cream">
+                <Image
+                  alt="Ali Newaz portrait"
+                  className="object-cover"
+                  fill
+                  priority
+                  sizes="360px"
+                  src="/assets/headshot.jpg"
+                  onError={(event) => {
+                    event.currentTarget.style.opacity = "0";
+                  }}
+                />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-canvas/92 to-transparent p-4">
+                  <p className="font-display text-2xl uppercase tracking-normal">
+                    Ali Newaz
+                  </p>
+                  <p className="mt-1 text-xs uppercase tracking-normal text-ink/60">
+                    Preservation discipline, computer science momentum.
+                  </p>
                 </div>
-                <div className="flex justify-between items-center text-left">
-                  <div>
-                    <h4 className="font-bold text-sm uppercase tracking-wide">Identity Framework</h4>
-                    <p className="text-[11px] font-mono opacity-60">WUB // Core Engineering</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section
+          aria-label="About Ali Newaz"
+          id="about"
+          ref={aboutRef}
+          className="gpu-layer pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6 py-24 md:px-10"
+        >
+          <div className="glass-panel grid w-full max-w-6xl grid-cols-1 gap-8 rounded-[8px] p-5 md:p-8 lg:grid-cols-[0.85fr_1.15fr]">
+            <div className="relative hidden overflow-hidden rounded-[8px] border border-white/10 bg-cream/40 p-4 md:block">
+              <div className="relative aspect-[4/5] h-full max-h-[560px] w-full overflow-hidden rounded-[8px]">
+                <Image
+                  alt="Ali Newaz"
+                  className="object-cover"
+                  fill
+                  sizes="(min-width: 1024px) 34vw, 100vw"
+                  src="/assets/rooftop1.jpg"
+                  onError={(event) => {
+                    event.currentTarget.style.opacity = "0";
+                  }}
+                />
+              </div>
+              <div className="absolute left-4 top-4 rounded-[8px] border border-white/10 bg-white/10 px-3 py-2 text-xs uppercase tracking-normal backdrop-blur-3xl">
+                WUB CSE
+              </div>
+            </div>
+            <div className="flex flex-col justify-between gap-8">
+              <div>
+                <p className="mb-4 flex items-center gap-2 text-xs uppercase tracking-normal text-ink/60">
+                  <BadgeCheck className="h-4 w-4" />
+                  About Slide
+                </p>
+                <h2 className="font-display text-4xl uppercase leading-tight tracking-normal md:text-6xl lg:text-7xl">
+                  Precision work for properties, systems thinking for software.
+                </h2>
+                <p className="mt-6 max-w-2xl text-base leading-7 text-ink/70 md:text-lg">
+                  Ali Newaz brings field-level discipline from property
+                  preservation into a computer science path at World University
+                  of Bangladesh. The result is a portfolio voice built around
+                  evidence, clarity, dependable execution, and sharply composed
+                  digital systems.
+                </p>
+              </div>
+              <div className="grid gap-3">
+                {credentials.map((item) => (
+                  <div
+                    className="grid gap-2 border-t border-ink/10 py-4 md:grid-cols-[220px_1fr]"
+                    key={item.label}
+                  >
+                    <p className="flex items-center gap-2 text-xs uppercase tracking-normal text-ink/55">
+                      {item.icon}
+                      {item.label}
+                    </p>
+                    <p className="text-sm font-medium uppercase tracking-normal text-ink md:text-base">
+                      {item.value}
+                    </p>
                   </div>
-                  <button onClick={() => scrollToView(0.55)} className="w-9 h-9 bg-[#1a1a15] text-white rounded-xl flex items-center justify-center hover:bg-[#cc5a37] transition-colors">
-                    <ArrowUpRight size={16} />
-                  </button>
-                </div>
+                ))}
               </div>
             </div>
           </div>
         </section>
 
-        {/* COMPONENT SCENE 2: DIRECTIONAL ABOUT ASSEMBLY */}
-        <section ref={aboutRef} id="section-about" className="absolute inset-0 bg-[#1a1a15] text-[#f3eee7] flex items-center justify-center p-6 z-30 opacity-0 pointer-events-auto will-change-transform">
-          <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center px-4">
-            <div className="lg:col-span-7 space-y-4 text-left about-panel-left will-change-transform">
-              <span className="text-xs font-mono tracking-widest text-[#cc5a37] font-bold uppercase">// OPERATIONS SYNC</span>
-              <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-none">
-                SYSTEMS CODING.<br/>
-                <span className="text-[#f3eee7]/40">PROPERTY PRESERVATION.</span>
+        <section
+          aria-label="Ali Newaz projects"
+          id="projects"
+          ref={projectsRef}
+          className="gpu-layer pointer-events-none absolute inset-0 z-30 flex flex-col justify-center overflow-hidden px-6 py-24 md:px-10"
+        >
+          <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div>
+              <p className="mb-3 flex items-center gap-2 text-xs uppercase tracking-normal text-ink/60">
+                <BookOpen className="h-4 w-4" />
+                Horizontal Carousel
+              </p>
+              <h2 className="font-display text-5xl uppercase leading-none tracking-normal md:text-7xl">
+                Selected systems
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs opacity-70 leading-relaxed font-normal pt-2">
-                <p>
-                  Operating at the intersection of structural engineering metrics and real estate preservation. Handling bulk workflow systems, optimizing asset pipeline distributions, script data structures, and executing strict timeline audits across thousands of property vendor parameters.
-                </p>
-                <p>
-                  Consolidating core engineering modules at the World University of Bangladesh. Mapping logical interface layouts directly into structural, low-latency, modular codebase components to maximize workflow speed and eliminate front-end friction.
-                </p>
-              </div>
             </div>
-
-            <div className="lg:col-span-5 flex justify-center lg:justify-end about-panel-right will-change-transform">
-              <div className="float-img relative w-full max-w-[340px] aspect-[3/4] rounded-2xl overflow-hidden border border-[#f3eee7]/10 p-2 bg-white/5 backdrop-blur-md shadow-xl">
-                <div className="relative w-full h-full rounded-xl overflow-hidden">
-                  <Image src="/assets/rooftop1.jpg" alt="Ali Newaz Workspace" fill className="object-cover" sizes="340px" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* COMPONENT SCENE 3: SYNCHRONIZED PROJECT TRACK */}
-        <section ref={projectsRef} id="section-projects" className="absolute inset-0 flex items-center z-30 opacity-0 pointer-events-auto will-change-transform pl-6 md:pl-24 pr-12">
-          <div className="flex flex-col text-left gap-2 shrink-0 pr-16 max-w-xs z-40 relative">
-            <div className="w-10 h-10 rounded-xl bg-[#cc5a37]/10 border border-[#cc5a37]/20 flex items-center justify-center text-[#cc5a37] mb-1">
-              <Compass size={18} className="animate-spin-slow" />
-            </div>
-            <span className="text-xs font-mono tracking-widest text-[#cc5a37] font-bold uppercase">// SELECTED REPOS</span>
-            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none">CORE<br/>WORK</h2>
-          </div>
-
-          <div ref={projectsTrackRef} className="flex gap-6 h-[55vh] items-center will-change-transform">
-            
-            {/* BOX CARD 1 */}
-            <div className="w-[400px] h-full bg-white/80 backdrop-blur-md border border-[#1a1a15]/10 rounded-2xl p-6 flex flex-col justify-between shadow-sm shrink-0">
-              <div className="flex justify-between items-start">
-                <div className="w-10 h-10 rounded-xl bg-[#1a1a15]/5 flex items-center justify-center text-[#cc5a37]"><Wrench size={18} /></div>
-                <span className="text-[10px] font-mono opacity-50 font-bold bg-[#1a1a15]/5 px-3 py-1 rounded-full">01 / DISPATCH</span>
-              </div>
-              <div className="space-y-2 text-left">
-                <h3 className="text-xl font-black uppercase tracking-tight">Field Readiness Engine</h3>
-                <p className="text-xs opacity-70 leading-relaxed">
-                  Real-time vendor logistics deployment framework covering multi-state preservation accounts, order tracking variables, and high-performance routing analytics modules.
-                </p>
-                <div className="flex gap-1.5 text-[9px] font-mono font-bold opacity-50 pt-1">
-                  <span className="border border-[#1a1a15]/20 px-2 py-0.5 rounded">QC METRICS</span>
-                  <span className="border border-[#1a1a15]/20 px-2 py-0.5 rounded">VENDOR STACK</span>
-                </div>
-              </div>
-            </div>
-
-            {/* BOX CARD 2 */}
-            <div className="w-[400px] h-full bg-white/80 backdrop-blur-md border border-[#1a1a15]/10 rounded-2xl p-6 flex flex-col justify-between shadow-sm shrink-0">
-              <div className="flex justify-between items-start">
-                <div className="w-10 h-10 rounded-xl bg-[#1a1a15]/5 flex items-center justify-center text-[#cc5a37]"><Laptop size={18} /></div>
-                <span className="text-[10px] font-mono opacity-50 font-bold bg-[#1a1a15]/5 px-3 py-1 rounded-full">02 / ACADEMICS</span>
-              </div>
-              <div className="space-y-2 text-left">
-                <h3 className="text-xl font-black uppercase tracking-tight">WUB Thesis Portal</h3>
-                <p className="text-xs opacity-70 leading-relaxed">
-                  Interactive software engineering laboratory interface archiving distributed network designs, structural code matrices, algorithms, and active computer engineering components.
-                </p>
-                <div className="flex gap-1.5 text-[9px] font-mono font-bold opacity-50 pt-1">
-                  <span className="border border-[#1a1a15]/20 px-2 py-0.5 rounded">LAB DEPLOYMENTS</span>
-                  <span className="border border-[#1a1a15]/20 px-2 py-0.5 rounded">COMPILER TIMELINE</span>
-                </div>
-              </div>
-            </div>
-
-            {/* BOX CARD 3 */}
-            <div className="w-[400px] h-full bg-white/80 backdrop-blur-md border border-[#1a1a15]/10 rounded-2xl p-6 flex flex-col justify-between shadow-sm shrink-0">
-              <div className="flex justify-between items-start">
-                <div className="w-10 h-10 rounded-xl bg-[#1a1a15]/5 flex items-center justify-center text-[#cc5a37]"><Shield size={18} /></div>
-                <span className="text-[10px] font-mono opacity-50 font-bold bg-[#1a1a15]/5 px-3 py-1 rounded-full">03 / REAL ESTATE</span>
-              </div>
-              <div className="space-y-2 text-left">
-                <h3 className="text-xl font-black uppercase tracking-tight">Preservation Script Matrix</h3>
-                <p className="text-xs opacity-70 leading-relaxed">
-                  Automated verification database tracking before/after asset updates, condition metrics, bidding formulations, and image processing modules for field data validation.
-                </p>
-                <div className="flex gap-1.5 text-[9px] font-mono font-bold opacity-50 pt-1">
-                  <span className="border border-[#1a1a15]/20 px-2 py-0.5 rounded">BID LOGIC</span>
-                  <span className="border border-[#1a1a15]/20 px-2 py-0.5 rounded">IMAGE BUFFERS</span>
-                </div>
-              </div>
-            </div>
-
-            {/* BOX CARD 4 */}
-            <div className="w-[400px] h-full bg-white/80 backdrop-blur-md border border-[#1a1a15]/10 rounded-2xl p-6 flex flex-col justify-between shadow-sm shrink-0">
-              <div className="flex justify-between items-start">
-                <div className="w-10 h-10 rounded-xl bg-[#1a1a15]/5 flex items-center justify-center text-[#cc5a37]"><Layout size={18} /></div>
-                <span className="text-[10px] font-mono opacity-50 font-bold bg-[#1a1a15]/5 px-3 py-1 rounded-full">04 / ARCHITECTURE</span>
-              </div>
-              <div className="space-y-2 text-left">
-                <h3 className="text-xl font-black uppercase tracking-tight">Identity OS Core</h3>
-                <p className="text-xs opacity-70 leading-relaxed">
-                  Ultra-fluid layout system built using clean hardware accelerated tracking to process infinite interactive scroll transitions smoothly on high-refresh setups.
-                </p>
-                <div className="flex gap-1.5 text-[9px] font-mono font-bold opacity-50 pt-1">
-                  <span className="border border-[#1a1a15]/20 px-2 py-0.5 rounded">GSAP TIMELINE</span>
-                  <span className="border border-[#1a1a15]/20 px-2 py-0.5 rounded">WEBGL GLIDE</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* COMPONENT SCENE 4: DEEP LAYER CONTACT CONNECTOR */}
-        <section ref={contactRef} id="section-contact" className="absolute inset-0 flex flex-col items-center justify-center p-4 z-40 opacity-0 pointer-events-none text-center">
-          <div className="max-w-3xl space-y-6 px-4">
-            <span className="text-xs font-mono tracking-widest text-[#cc5a37] font-bold uppercase block">// CONNECT PLATFORM</span>
-            <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9]">
-              LET THE NEXT BRIEF ARRIVE <br/>
-              <span className="text-[#1a1a15]/20">CLEAN AND PREPARED.</span>
-            </h2>
-            <p className="text-xs opacity-70 max-w-md mx-auto leading-relaxed">
-              Available for software infrastructure development modules, structural preservation audits, or engineering evaluation tracks.
+            <p className="max-w-md text-sm leading-6 text-ink/62">
+              Vertical wheel input drives this horizontal project track through
+              the same master timeline, keeping every reveal mechanically
+              synchronized.
             </p>
-            
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-              <a 
-                href="mailto:alinewaz5678900@gmail.com"
-                className="inline-flex items-center gap-3 bg-[#1a1a15] text-[#f3eee7] text-xs font-bold uppercase tracking-widest px-8 py-4 rounded-xl shadow-md hover:bg-[#cc5a37] transition-all pointer-events-auto"
+          </div>
+
+          <div ref={projectTrackRef} className="gpu-layer flex w-max gap-4">
+            {projects.map((project, index) => (
+              <article
+                className="glass-panel group w-[78vw] shrink-0 rounded-[8px] p-3 md:w-[46vw] lg:w-[34vw] xl:w-[30vw]"
+                key={project.title}
               >
-                <Mail size={14} /> Send Email <ArrowUpRight size={14} />
-              </a>
-              <a 
-                href="/assets/Ali_Newaz_CV.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 bg-white/80 border border-[#1a1a15]/10 text-[#1a1a15] text-xs font-bold uppercase tracking-widest px-8 py-4 rounded-xl hover:bg-[#1a1a15] hover:text-white transition-all pointer-events-auto"
-              >
-                <FileText size={14} /> Preview Document
-              </a>
+                <div className="relative aspect-[16/10] overflow-hidden rounded-[8px] border border-white/10 bg-cream/60">
+                  <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,249,240,0.95),rgba(216,195,173,0.54)_48%,rgba(91,70,56,0.2))]" />
+                  <div className="absolute inset-0 opacity-50 [background-image:linear-gradient(90deg,rgba(26,26,21,0.08)_1px,transparent_1px),linear-gradient(180deg,rgba(26,26,21,0.08)_1px,transparent_1px)] [background-size:28px_28px]" />
+                  <div className="absolute left-4 top-4 flex h-10 w-10 items-center justify-center rounded-[8px] border border-white/10 bg-white/10 font-display text-xl backdrop-blur-3xl">
+                    {String(index + 1).padStart(2, "0")}
+                  </div>
+                  <div className="absolute bottom-4 left-4 right-4 h-px overflow-hidden bg-ink/10">
+                    <div className="h-full w-1/2 animate-scan bg-ink/30" />
+                  </div>
+                </div>
+                <div className="p-2 pt-5">
+                  <p className="text-xs uppercase tracking-normal text-ink/55">
+                    {project.eyebrow}
+                  </p>
+                  <h3 className="mt-2 font-display text-3xl uppercase leading-tight tracking-normal md:text-4xl">
+                    {project.title}
+                  </h3>
+                  <p className="mt-4 text-sm leading-6 text-ink/66">
+                    {project.summary}
+                  </p>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {project.stats.map((stat) => (
+                      <span
+                        className="rounded-[8px] border border-ink/10 px-3 py-2 text-[11px] uppercase tracking-normal text-ink/60"
+                        key={stat}
+                      >
+                        {stat}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section
+          aria-label="Contact Ali Newaz"
+          id="contact"
+          ref={contactRef}
+          className="gpu-layer pointer-events-none absolute inset-0 z-40 flex items-center justify-center px-6 py-24 md:px-10"
+        >
+          <div className="grid w-full max-w-6xl grid-cols-1 items-end gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="glass-panel rounded-[8px] p-5 md:p-8">
+              <p className="mb-5 flex items-center gap-2 text-xs uppercase tracking-normal text-ink/60">
+                <Mail className="h-4 w-4" />
+                Contact Slide
+              </p>
+              <h2 className="font-display text-4xl uppercase leading-tight tracking-normal md:text-7xl lg:text-8xl">
+                Let the next brief arrive clean, sharp, and ready.
+              </h2>
+              <p className="mt-6 max-w-2xl text-base leading-7 text-ink/68 md:text-lg">
+                For preservation work, student collaboration, or a polished web
+                system, Ali Newaz is presented here with a contact layer that
+                stays tactile while the portal completes its final reveal.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <MagneticButton
+                  href="mailto:alinewaz5678900@gmail.com?subject=Portfolio inquiry for Ali Newaz"
+                  icon={<Mail className="h-4 w-4" />}
+                >
+                  Send Brief
+                </MagneticButton>
+                <MagneticButton
+                  download
+                  href="/assets/cv.png"
+                  icon={<ArrowDownToLine className="h-4 w-4" />}
+                >
+                  Resume
+                </MagneticButton>
+              </div>
+            </div>
+
+            <div className="glass-panel hidden rounded-[8px] p-5 md:p-6 lg:block">
+              <div className="flex items-center justify-between border-b border-ink/10 pb-4">
+                <p className="text-xs uppercase tracking-normal text-ink/55">
+                  Identity Layer
+                </p>
+                <ArrowUpRight className="h-5 w-5" />
+              </div>
+              <div className="space-y-5 pt-5">
+                <div>
+                  <p className="text-xs uppercase tracking-normal text-ink/45">
+                    Name
+                  </p>
+                  <p className="mt-1 font-display text-3xl uppercase tracking-normal">
+                    Ali Newaz
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-normal text-ink/45">
+                    Brand
+                  </p>
+                  <p className="mt-1 text-sm font-medium uppercase tracking-normal leading-6">
+                    Property Preservation Specialist & CSE Student
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-normal text-ink/45">
+                    Institution
+                  </p>
+                  <p className="mt-1 text-sm font-medium uppercase tracking-normal leading-6">
+                    World University of Bangladesh (WUB)
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* METRIC CORNER BENCHMARKS */}
-        <footer className="w-full flex justify-between items-center z-50 text-[9px] font-mono uppercase tracking-widest opacity-40 select-none">
-          <span>SCROLL ENGINE ACTIVE</span>
-          <span>DHAKA COMPILER GRID</span>
-        </footer>
-
+        <div className="pointer-events-none absolute inset-x-6 bottom-6 z-50 md:inset-x-10">
+          <div className="mb-3 flex items-center justify-between text-[10px] uppercase tracking-normal text-ink/50">
+            <span>Scroll Wheel Timeline</span>
+            <span>400vh Buffer</span>
+          </div>
+          <div className="h-px overflow-hidden bg-ink/10">
+            <div ref={progressFillRef} className="h-full w-full bg-ink" />
+          </div>
+        </div>
       </div>
 
-      {/* MECHANICAL DEPTH SPACER */}
-      <div ref={scrollBufferRef} className="relative z-0 h-[500vh] w-full pointer-events-none" />
-
-    </div>
+      <div
+        aria-hidden="true"
+        className="relative h-[400vh] w-full pointer-events-none"
+        ref={scrollBufferRef}
+      />
+    </main>
   );
 }
