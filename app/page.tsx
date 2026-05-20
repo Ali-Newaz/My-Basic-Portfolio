@@ -514,7 +514,7 @@ export default function Page() {
               className="h-8 w-8 object-contain"
               height={32}
               priority
-              src="/assets/Ali_Newaz_LOGO.png"
+              src="/assets/logo.png"
               width={32}
               onError={(event) => {
                 event.currentTarget.style.display = "none";
@@ -638,7 +638,7 @@ export default function Page() {
                 </MagneticButton>
                 <MagneticButton
                   download
-                  href="/assets/Ali_Newaz_CV.pdf"
+                  href="/assets/cv.png"
                   icon={<ArrowDownToLine className="h-4 w-4" />}
                 >
                   Download CV
@@ -657,7 +657,7 @@ export default function Page() {
                   fill
                   priority
                   sizes="360px"
-                  src="/assets/Main.jpg"
+                  src="/assets/headshot.jpg"
                   onError={(event) => {
                     event.currentTarget.style.opacity = "0";
                   }}
@@ -689,7 +689,7 @@ export default function Page() {
                   className="object-cover"
                   fill
                   sizes="(min-width: 1024px) 34vw, 100vw"
-                  src="/assets/Main.jpg"
+                  src="/assets/rooftop1.jpg"
                   onError={(event) => {
                     event.currentTarget.style.opacity = "0";
                   }}
@@ -823,14 +823,14 @@ export default function Page() {
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <MagneticButton
-                  href="mailto:?subject=Portfolio inquiry for Ali Newaz"
+                  href="mailto:alinewaz5678900@gmail.com?subject=Portfolio inquiry for Ali Newaz"
                   icon={<Mail className="h-4 w-4" />}
                 >
                   Send Brief
                 </MagneticButton>
                 <MagneticButton
                   download
-                  href="/assets/Ali_Newaz_CV.pdf"
+                  href="/assets/cv.png"
                   icon={<ArrowDownToLine className="h-4 w-4" />}
                 >
                   Resume
