@@ -1,6 +1,6 @@
 {
-  "name": "ali-newaz-cinematic-portfolio",
-  "version": "1.0.0",
+  "name": "ali-newaz-portfolio",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,23 +9,20 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "framer-motion": "^11.18.2",
-    "gsap": "^3.12.7",
-    "lenis": "^1.1.20",
-    "lucide-react": "^0.468.0",
-    "next": "14.2.35",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "clsx": "^2.1.1",
+    "gsap": "^3.12.5",
+    "lucide-react": "^0.378.0",
+    "next": "14.2.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
-    "@types/node": "^22.10.7",
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5",
-    "autoprefixer": "^10.4.20",
-    "eslint": "^8.57.1",
-    "eslint-config-next": "14.2.35",
-    "postcss": "^8.5.1",
-    "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.3"
+    "@types/node": "^20.12.12",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.4.5"
   }
 }
